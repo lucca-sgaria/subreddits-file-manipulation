@@ -121,4 +121,12 @@ public class MainFileDateIndexedService {
     private String stringToFixedSize(String string, int width) {
         return String.format("%1$" + width + "s", string);
     }
+
+    public File getIndexedFile() {
+        return indexedFile;
+    }
+
+    public void setIndexedFile(File indexedFile) {
+        this.indexedFile = indexedFile;
+    }
 }

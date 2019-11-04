@@ -1,6 +1,7 @@
 package br.com.ucs.subreddits.manipulation;
 
 import br.com.ucs.subreddits.manipulation.constants.Path;
+import br.com.ucs.subreddits.manipulation.service.HashService;
 import br.com.ucs.subreddits.manipulation.service.MainFileDateIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileIdIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileServiceBean;
@@ -40,6 +41,15 @@ public class Application {
         mainFileDateIndexedService = new MainFileDateIndexedService(mainService.getMainFile());
         mainFileDateIndexedService.createAndPopulateDateFile(Path.INDEXED_DATE_FILE);
         System.out.println("Finalizado criação e inserção do arquivo de índice primário baseados no campo data...");
+
+        System.out.println("====================================================================");
+        System.out.println("Iniciando criação de índices de hash de datas...");
+        HashService hashService = new HashService();
+        hashService.createMap(mainFileDateIndexedService.getIndexedFile());
+        System.out.println("Finalizado criação de índices de hash de datas...");
+
+        System.out.println("printar mapa");
+        hashService.printMap();
     }
 
 

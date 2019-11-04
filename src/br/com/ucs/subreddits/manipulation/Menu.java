@@ -1,4 +1,4 @@
-package br.com.ucs.subreddits.manipulation.util;
+package br.com.ucs.subreddits.manipulation;
 
 import br.com.ucs.subreddits.manipulation.Application;
 
