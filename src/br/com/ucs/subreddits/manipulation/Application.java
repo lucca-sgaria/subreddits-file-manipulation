@@ -136,7 +136,7 @@ public class Application {
             }
 
             Calendar c = Calendar.getInstance();
-            c.set(id, mes-1, dia, 0, 0);
+            c.set(id, mes - 1, dia, 0, 0);
 
             Date time = c.getTime();
             System.out.println("date " + time.toString());
@@ -145,11 +145,11 @@ public class Application {
             System.out.println("address " + address);
 
             String[] split = address.split(";");
-            if(split.length==2) {
+            if (split.length == 2) {
                 int pos = Integer.valueOf(split[0]);
                 int finalPos = Integer.valueOf(split[1]);
 
-                mainService.printMainFileInterval(pos,finalPos);
+                mainService.printMainFileInterval(pos, finalPos);
             }
 
 
