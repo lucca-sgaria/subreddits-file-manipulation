@@ -2,12 +2,15 @@ package br.com.ucs.subreddits.manipulation.model;
 
 import br.com.ucs.subreddits.manipulation.constants.RecordWidths;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Subreddit {
-    private Long id;
+public class Subreddit implements Serializable{
+	private static final long serialVersionUID = 6056453798648924933L;
+	
+	private Long id;
     private String idReddit;
     private String displayName;
     private Date created;

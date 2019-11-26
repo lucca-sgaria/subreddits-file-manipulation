@@ -1,14 +1,17 @@
 package br.com.ucs.subreddits.manipulation;
 
 import br.com.ucs.subreddits.manipulation.constants.Path;
+import br.com.ucs.subreddits.manipulation.model.Subreddit;
 import br.com.ucs.subreddits.manipulation.service.HashService;
 import br.com.ucs.subreddits.manipulation.service.MainFileDateIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileIdIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileServiceBean;
 import br.com.ucs.subreddits.manipulation.service.RawDataFileServiceBean;
+import br.com.ucs.subreddits.mongojson.service.JsonGenerator;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class Application {
@@ -47,9 +50,17 @@ public class Application {
         HashService hashService = new HashService();
         hashService.createMap(mainFileDateIndexedService.getIndexedFile());
         System.out.println("Finalizado criação de índices de hash de datas...");
+        
+        JsonGenerator jsonGenerator = new JsonGenerator();
+        List<Subreddit> subredditList = rawService.getRawDataFile().getSubredditList();
+        rawService.printSubredditList();
+        List<String> listJson = jsonGenerator.getJson(subredditList);
+//        System.out.println("Stringa");
+//        System.out.println(json);
 
-        System.out.println("printar mapa");
-        hashService.printMap();
+        
+//        System.out.println("printar mapa");
+//        hashService.printMap();
     }
 
 
