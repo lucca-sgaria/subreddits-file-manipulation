@@ -20,11 +20,42 @@ public class BTreeService {
         this.objBtree = new BTree();
     }
 
-    public void insert(int value) {
-        this.objBtree(this.objBtree, value);
+    public void insert(File file)
+    {
+        try
+        {
+            RandomAccessFile rn = new RandomAccessFile(file, "r");
+            double records = rn.length() / 21;
+            System.out.println(records);
+
+            byte[] byteLine = new byte[90];
+            for (int i = 0; i < records; i++)
+            {
+                rn.seek(i * 21);
+                rn.read(byteLine, 0, 21);
+                String strLine = new String(byteLine, "UTF-8");
+
+                int id = Integer.parseInt(strLine.subSequence(11, 12).toString().trim());
+
+                this.objTree.insert(this.objTree, id);
+
+            }
+
+        }
+        catch(Exception exc)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            rn.close();
+        }
     }
 
-    public void print() {
-        this.objBtree.print(this.objBtree.getRoot());
+    public void print()
+    {
+
+        System.out.println("===============================================");
+        this.objBtree.print(this.objTree.root);
     }
 }
