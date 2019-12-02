@@ -8,25 +8,15 @@ import org.junit.Assert;
 
 public class CryptoTest {
 
-    public AES obj;
-
-//    @Before
-//    public void initialize() {
-//        obj.setkey("PERNAMBUCO");
-//    }
 
     @Test
     public void testEncryption(){
+        AES obj = new AES();
+        String str = "senha123";
+        String criptografado = obj.encrypt(str, "chave_cripto");
+        String decrypt = obj.decrypt(criptografado, "chave_cripto");
 
-//        Assert.assertEquals(obj.decrypt(obj.encrypt("admin")),obj.encrypt("admin"));
-
+        Assert.assertEquals(str,decrypt);
     }
 
-    @Test
-    public void testDecryption(){
-
-
-//        Assert.assertEquals("admin",obj.decrypt(AES.encrypt("admin")));
-
-    }
 }
