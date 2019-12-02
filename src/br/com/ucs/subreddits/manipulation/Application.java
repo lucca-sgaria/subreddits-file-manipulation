@@ -8,6 +8,8 @@ import br.com.ucs.subreddits.manipulation.service.MainFileIdIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileServiceBean;
 import br.com.ucs.subreddits.manipulation.service.RawDataFileServiceBean;
 import br.com.ucs.subreddits.mongojson.service.JsonGenerator;
+import br.com.ucs.subreddits.mongojson.service.MongoConnection;
+import br.com.ucs.subreddits.mongojson.service.MongoDAO;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -50,17 +52,19 @@ public class Application {
         HashService hashService = new HashService();
         hashService.createMap(mainFileDateIndexedService.getIndexedFile());
         System.out.println("Finalizado criação de índices de hash de datas...");
-        
-        JsonGenerator jsonGenerator = new JsonGenerator();
-        List<Subreddit> subredditList = rawService.getRawDataFile().getSubredditList();
-        rawService.printSubredditList();
-        List<String> listJson = jsonGenerator.getJson(subredditList);
-//        System.out.println("Stringa");
-//        System.out.println(json);
 
-        
-//        System.out.println("printar mapa");
-//        hashService.printMap();
+        JsonGenerator jsonGenerator = new JsonGenerator();
+        MongoConnection mongoConnection = new MongoConnection();
+        MongoDAO mongoDAO = new MongoDAO();
+
+        List<Subreddit> subredditList = rawService.getRawDataFile().getSubredditList();
+        for (Subreddit subreddit : subredditList) {
+            if(!mongoDAO.existById(subreddit.getId(),mongoConnection.getMongoConnection())) {
+                String json = jsonGenerator.getJson(subreddit);
+                mongoDAO.insertSubreddit(json,mongoConnection.getMongoConnection());
+            }
+        }
+
     }
 
 
@@ -70,6 +74,8 @@ public class Application {
         System.out.println("1. Realizar pesquisa no arquivo principal sequencial. ");
         System.out.println("2. Realizar pesquisa no arquivo principal sequencial-indexado através do índice do campo id. ");
         System.out.println("3. Realizar pesquisa no arquivo principal sequencial-indexado através do índice do campo data. ");
+        System.out.println("4. Realizar pesquisa no Banco por ID. ");
+        System.out.println("4. Realizar pesquisa no Banco por Data. ");
 
         System.out.println("-1.Exit");
 

@@ -1,4 +1,4 @@
-package com.ucs.btree;
+package br.com.ucs.subreddits.manipulation.model;
 
 public class Node {
 

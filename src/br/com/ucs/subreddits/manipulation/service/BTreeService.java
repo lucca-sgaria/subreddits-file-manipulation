@@ -14,8 +14,6 @@ public class BTreeService {
 
     public BTree objBtree;
 
-    public BTreeService() {}
-
     public BTreeService() {
         this.objBtree = new BTree();
     }
@@ -37,18 +35,18 @@ public class BTreeService {
 
                 int id = Integer.parseInt(strLine.subSequence(11, 12).toString().trim());
 
-                this.objTree.insert(this.objTree, id);
+                this.objBtree.insert(this.objBtree, id);
 
             }
 
         }
         catch(Exception exc)
         {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         finally
         {
-            rn.close();
+//            rn.close();
         }
     }
 
@@ -56,6 +54,6 @@ public class BTreeService {
     {
 
         System.out.println("===============================================");
-        this.objBtree.print(this.objTree.root);
+//        this.objBtree.print(this.objTree.root);
     }
 }

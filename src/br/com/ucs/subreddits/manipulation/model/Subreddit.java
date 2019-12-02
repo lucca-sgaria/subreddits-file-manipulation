@@ -19,6 +19,7 @@ public class Subreddit implements Serializable{
     private String language;
     private String path;
     private String url;
+    private String date;
 
     public Subreddit(Long id, String idReddit, String displayName, Date created,
                      Double createdUtc, Long subscribers, String language,
@@ -32,6 +33,9 @@ public class Subreddit implements Serializable{
         this.language = language;
         this.path = path;
         this.url = url;
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        date= dateFormat.format(created);
     }
 
     public Subreddit() {
@@ -107,6 +111,14 @@ public class Subreddit implements Serializable{
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     @Override
