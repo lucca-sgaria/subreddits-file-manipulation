@@ -7,9 +7,13 @@ import br.com.ucs.subreddits.manipulation.service.MainFileDateIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileIdIndexedService;
 import br.com.ucs.subreddits.manipulation.service.MainFileServiceBean;
 import br.com.ucs.subreddits.manipulation.service.RawDataFileServiceBean;
+import br.com.ucs.subreddits.manipulation.util.AES;
 import br.com.ucs.subreddits.mongojson.service.JsonGenerator;
 import br.com.ucs.subreddits.mongojson.service.MongoConnection;
 import br.com.ucs.subreddits.mongojson.service.MongoDAO;
+import com.mongodb.DBCollection;
+import com.mongodb.client.MongoDatabase;
+import sun.security.krb5.internal.crypto.Aes128;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -56,14 +60,22 @@ public class Application {
         JsonGenerator jsonGenerator = new JsonGenerator();
         MongoConnection mongoConnection = new MongoConnection();
         MongoDAO mongoDAO = new MongoDAO();
+        DBCollection mongoConnectionDb = mongoConnection.getMongoConnectionDb();
 
         List<Subreddit> subredditList = rawService.getRawDataFile().getSubredditList();
-        for (Subreddit subreddit : subredditList) {
-            if(!mongoDAO.existById(subreddit.getId(),mongoConnection.getMongoConnection())) {
-                String json = jsonGenerator.getJson(subreddit);
-                mongoDAO.insertSubreddit(json,mongoConnection.getMongoConnection());
-            }
-        }
+//        List<Subreddit> subreddits = subredditList.subList(11000,20000);
+//        for (Subreddit subreddit : subreddits) {
+//            AES aes = new AES();
+//            String encrypt = aes.encrypt(subreddit.getDisplayName(), "PERNAMBUCO!");
+//            subreddit.setDisplayName(encrypt);
+//
+//            if(!mongoDAO.existById(subreddit.getId(),mongoConnectionDb)) {
+//                String json = jsonGenerator.getJson(subreddit);
+//                mongoDAO.insertSubreddit(json,mongoConnectionDb);
+//            }
+//        }
+
+        mongoDAO.createIndex(new MongoConnection().getMongoConnection());
 
     }
 
@@ -75,7 +87,8 @@ public class Application {
         System.out.println("2. Realizar pesquisa no arquivo principal sequencial-indexado através do índice do campo id. ");
         System.out.println("3. Realizar pesquisa no arquivo principal sequencial-indexado através do índice do campo data. ");
         System.out.println("4. Realizar pesquisa no Banco por ID. ");
-        System.out.println("4. Realizar pesquisa no Banco por Data. ");
+        System.out.println("6. Realizar pesquisa no Banco pelo Nome. ");
+        System.out.println("7. Pesquisa mais inscritos");
 
         System.out.println("-1.Exit");
 
@@ -91,6 +104,14 @@ public class Application {
                     return 2;
                 case "3":
                     return 3;
+                case "4":
+                    return 4;
+                case "5":
+                    return 5;
+                case "6":
+                    return 6;
+                case "7":
+                    return 7;
                 case "-1":
                     return -1;
                 default:
@@ -109,6 +130,15 @@ public class Application {
             case 3:
                 binarySearchByDate();
                 break;
+            case 4:
+                mongoById();
+                break;
+            case 6:
+                mongoByName();
+                break;
+            case 7:
+                monthWithMostSubscribed();
+                break;
             case -1:
                 return false;
             default:
@@ -117,43 +147,56 @@ public class Application {
         return true;
     }
 
+    private void monthWithMostSubscribed() {
+        MongoConnection mConnection = new MongoConnection();
+        MongoDAO dao = new MongoDAO();
+        dao.mostSubscriber(mConnection.getMongoConnectionDb());
+    }
+
+    private void mongoByName() {
+        Scanner scanner1 = new Scanner(System.in);
+
+        String name = "";
+        System.out.println("Informe o nome : ");
+        name = scanner1.next().trim();
+
+        AES aes = new AES();
+        String encrypt = aes.encrypt(name, "PERNAMBUCO!");
+
+        MongoConnection mConnection = new MongoConnection();
+        MongoDAO dao = new MongoDAO();
+        dao.findByName(encrypt, mConnection.getMongoConnectionDb());
+        System.out.println("end");
+    }
+
+    private void mongoById() {
+        Scanner scanner1 = new Scanner(System.in);
+
+        int id = 0;
+        while (true) {
+            System.out.println("Informe um id : ");
+            String next = scanner1.next().trim();
+
+            id = 0;
+            try {
+                id = Integer.parseInt(next);
+                break;
+            } catch (NumberFormatException ex) {
+            }
+        }
+
+        MongoConnection mConnection = new MongoConnection();
+        MongoDAO dao = new MongoDAO();
+        dao.findID(id,mConnection.getMongoConnectionDb());
+    }
+
     @SuppressWarnings("Duplicates")
     private void binarySearchByDate() {
         Scanner scanner1 = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Informe o ano : ");
-            String ano = scanner1.next().trim();
-
-            int id = 0;
-            try {
-                id = Integer.parseInt(ano);
-            } catch (NumberFormatException ex) {
-                continue;
-            }
-
-            System.out.println("Informe o mes : ");
-            String mesString = scanner1.next().trim();
-
-            int mes = 0;
-            try {
-                mes = Integer.parseInt(mesString);
-            } catch (NumberFormatException ex) {
-                continue;
-            }
-
-            System.out.println("Informe o dia : ");
-            String diaString = scanner1.next().trim();
-
-            int dia = 0;
-            try {
-                dia = Integer.parseInt(diaString);
-            } catch (NumberFormatException ex) {
-                continue;
-            }
-
-            Calendar c = Calendar.getInstance();
-            c.set(id, mes - 1, dia, 0, 0);
+            Calendar c = getCalendar(scanner1);
+            if (c == null) continue;
 
             Date time = c.getTime();
             System.out.println("date " + time.toString());
@@ -171,6 +214,42 @@ public class Application {
 
 
         }
+    }
+
+    private Calendar getCalendar(Scanner scanner1) {
+        System.out.println("Informe o ano : ");
+        String ano = scanner1.next().trim();
+
+        int id = 0;
+        try {
+            id = Integer.parseInt(ano);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+
+        System.out.println("Informe o mes : ");
+        String mesString = scanner1.next().trim();
+
+        int mes = 0;
+        try {
+            mes = Integer.parseInt(mesString);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+
+        System.out.println("Informe o dia : ");
+        String diaString = scanner1.next().trim();
+
+        int dia = 0;
+        try {
+            dia = Integer.parseInt(diaString);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.set(id, mes - 1, dia, 0, 0);
+        return c;
     }
 
 
